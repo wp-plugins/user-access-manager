@@ -1242,7 +1242,7 @@ class UserAccessManager
      */
     public function addUserColumnsHeader($aDefaults)
     {
-        $aDefaults['uam_access'] = __('uam user groups');
+        $aDefaults['uam_access'] = __('uam user groups', 'user-access-manager');
         return $aDefaults;
     }
     

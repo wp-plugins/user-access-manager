@@ -275,7 +275,7 @@ if (!function_exists("userAccessManagerAPMenu")) {
                 $aPostableTypes = $oUamAccessHandler->getPostableTypes();
                 
                 foreach ($aPostableTypes as $sPostableType) {
-                    add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), $sPostableType, 'side');
+                    add_meta_box('uma_post_access', __('Access', 'user-access-manager'), array($oUserAccessManager, 'editPostContent'), $sPostableType, 'side');
                 }
                 
                 /*add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), 'post', 'side');
