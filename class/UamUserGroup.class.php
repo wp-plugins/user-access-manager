@@ -919,34 +919,21 @@ class UamUserGroup
      */
     public function getFullCategories($aCategories)
     {
-        $aUserAccessManager = $this->getAccessHandler()->getUserAccessManager();
-        $aUamOptions = $aUserAccessManager->getAdminOptions();
+        $oUserAccessManager = $this->getAccessHandler()->getUserAccessManager();
+        $aUamOptions = $oUserAccessManager->getAdminOptions();
 
         foreach ($aCategories as $oCategory) {
             if ($oCategory != null) {
                 if ($aUamOptions['lock_recursive'] == 'true') {
                     //We have to remove the filter to get all categories
-                    $blRemoveSuccess = remove_filter(
-                        'get_terms',
-                        array(
-                            $this->getAccessHandler()->getUserAccessManager(), 
-                            'showCategory'
-                        )
-                    );
+                    $blRemoveSuccess = remove_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10);
                     
                     if ($blRemoveSuccess) {
-                        $aArgs = array(
-                            'child_of' => $oCategory->id,
-                            'hide_empty' => false
-                        );
-                        
+                        $aArgs = array('child_of' => $oCategory->id, 'hide_empty' => false);
+
                         $aCategoryChildren = get_categories($aArgs);
                         
-                        add_filter(
-                            'get_terms',
-                            array($aUserAccessManager, 'showCategory')
-                        );
-                        
+                        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 3);
                         
                         foreach ($aCategoryChildren as $oCategoryChild) {
                             $oCurCategoryChild = new stdClass();
@@ -954,7 +941,7 @@ class UamUserGroup
                             $oCurCategoryChild->name = $oCategoryChild->name;
                             
                             $oCurCategoryChild->recursiveMember = array('category' => array());
-                            $oCurCategoryChild->recursiveMember['category'][] = $oCurCategoryChild;
+                            $oCurCategoryChild->recursiveMember['category'][] = $oCategory;
                             $aCategories[$oCurCategoryChild->id] = $oCurCategoryChild;
                         }
                     }
