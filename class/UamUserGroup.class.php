@@ -610,6 +610,9 @@ class UamUserGroup
      */
     protected function _isObjectAssignedToGroup($sObjectType, $iObjectId)
     {
+        if (!$this->isValidObjectType($sObjectType)) {
+            return false;
+        }
         $aAssignedObjects = $this->_getAssignedObjects($sObjectType);
         return isset($aAssignedObjects[$iObjectId]);
     }
