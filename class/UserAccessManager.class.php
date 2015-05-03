@@ -1752,27 +1752,26 @@ class UserAccessManager
         
         $oTerm->isEmpty = false;
         
-        $oTerm->name .= $this->adminOutput('category', $oTerm->term_id);
-        
         if ($sTermType == 'post_tag'
             || ( $sTermType == 'category' || $sTermType == $oTerm->taxonomy)
             && $oUamAccessHandler->checkObjectAccess('category', $oTerm->term_id)
         ) {
+            $oTerm->name .= $this->adminOutput('category', $oTerm->term_id);
+            
             if ($this->atAdminPanel() == false
                 && ($aUamOptions['hide_post'] == 'true'
                 || $aUamOptions['hide_page'] == 'true')
             ) {
-                $iTermRequest = $oTerm->term_id;
-                $sTermRequestType = $sTermType;
-                
-                if ($sTermType == 'post_tag') {
-                    $iTermRequest = $oTerm->slug;
-                    $sTermRequestType = 'tag';
-                }
-                
                 $aArgs = array(
                     'numberposts' => - 1,
-                    $sTermRequestType => $iTermRequest
+                    'tax_query' => array(
+                      array(
+                        'taxonomy' => $sTermType,
+                        'terms' => array($oTerm->term_id),
+                        'field' => 'term_id',
+                        'include_children' => true
+                      )
+                    )
                 );
                 
                 $aTermPosts = get_posts($aArgs);
@@ -1796,8 +1795,7 @@ class UserAccessManager
                 //For categories
                 if ($oTerm->count <= 0
                     && $aUamOptions['hide_empty_categories'] == 'true'
-                    && ($oTerm->taxonomy == "term"
-                    || $oTerm->taxonomy == "category")
+                    && $oTerm->taxonomy == "category"
                 ) {
                     $oTerm->isEmpty = true;
                 }
