@@ -331,7 +331,8 @@ if (isset($oUserAccessManager)) {
             add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
         }
         add_filter('the_posts', array($oUserAccessManager, 'showPost'), 10, 2);
-        add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
+        // NOTE: This filter is not needed since the where clause is already added in 'parse_query' hook.
+        //add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
         add_filter('wp_get_nav_menu_items', array($oUserAccessManager, 'showCustomMenu'));
         add_filter('comments_array', array($oUserAccessManager, 'showComment'));
         add_filter('the_comments', array($oUserAccessManager, 'showComment'));
