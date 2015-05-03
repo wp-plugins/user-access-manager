@@ -145,7 +145,8 @@ if (!function_exists("userAccessManagerAP")) {
                 add_action('edit_user_profile', array($oUserAccessManager, 'showUserProfile'));
                 add_action('profile_update', array($oUserAccessManager, 'saveUserData'));
 
-                add_action('edit_category_form', array($oUserAccessManager, 'showCategoryEditForm'));
+                add_action('category_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                add_action('category_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                 add_action('create_category', array($oUserAccessManager, 'saveCategoryData'));
                 add_action('edit_category', array($oUserAccessManager, 'saveCategoryData'));
 
@@ -324,8 +325,11 @@ if (isset($oUserAccessManager)) {
     
     //Filters
     if (function_exists('add_filter')) {
-        add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
-        add_filter('wp_get_attachment_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
+        if ($aUamOptions['lock_file'] == 'true') {
+            add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
+            add_filter('wp_get_attachment_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
+            add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
+        }
         add_filter('the_posts', array($oUserAccessManager, 'showPost'), 10, 2);
         add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
         add_filter('wp_get_nav_menu_items', array($oUserAccessManager, 'showCustomMenu'));
@@ -335,7 +339,6 @@ if (isset($oUserAccessManager)) {
         add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 3);
         add_filter('get_next_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('get_previous_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
-        add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
         add_filter('edit_post_link', array($oUserAccessManager, 'showGroupMembership'), 10, 2);
         add_filter('parse_query', array($oUserAccessManager, 'parseQuery'));
         add_filter('getarchives_where', array($oUserAccessManager, 'showPostSql'));
