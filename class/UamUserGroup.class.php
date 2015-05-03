@@ -454,7 +454,7 @@ class UamUserGroup
                 $sObjectType, 
                 $iObjectId
             );
-        } elseif ($sPrefix == 'ismember') {
+        } elseif ($sPrefix == 'isMember') {
             $blWithInfo = $aArguments[1];
             
             return $this->objectIsMember(
