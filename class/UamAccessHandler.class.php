@@ -83,7 +83,7 @@ class UamAccessHandler
             $this->_aPostableTypes[] = $oArgs->name;
             $this->_aPostableTypes = array_unique($this->_aPostableTypes);
             $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
-            $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+            $this->_aObjectTypes = array_unique( array_merge($this->_aObjectTypes, $this->_aPostableTypes) );
             $this->_aAllObjectTypes = null;
             $this->_aAllObjectTypesMap = null;
             $this->_aValidObjectTypes = null;
@@ -735,7 +735,7 @@ class UamAccessHandler
     public function userIsAdmin($iUserId)
     {
         $aRoles = $this->_getUserRole($iUserId);
-        $aRolesMap = array_keys($aRoles);
+        $aRolesMap = array_flip($aRoles);
         
         if (isset($aRolesMap['administrator']) || is_super_admin($iUserId)) {
             return true;
@@ -757,7 +757,7 @@ class UamAccessHandler
         $aUamOptions = $this->getUserAccessManager()->getAdminOptions();
         
         $aRoles = $this->_getUserRole($oCurrentUser->ID);
-        $aRolesMap = array_keys($aRoles);
+        $aRolesMap = array_flip($aRoles);
         $aOrderedRoles = $this->getRolesOrdered();
         $iRightsLevel = 0;
 
