@@ -1041,7 +1041,10 @@ class UamUserGroup
         ) {
             $oParent = $oUserAccessManager->getPost($iParentId);
             
-            $oParentPost = $this->_getSingleObject($oParent->post_type, $iParentId, 'full');
+            $oParentPost = null;
+            if ($this->getAccessHandler()->isPostableType($oParent->post_type)) {
+                $oParentPost = $this->_getSingleObject($oParent->post_type, $iParentId, 'full');
+            }
     
             if ($oParentPost !== null) {
                 $oParentPost->name = $oParent->post_title;
