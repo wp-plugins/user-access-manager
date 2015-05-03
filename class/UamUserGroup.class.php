@@ -810,17 +810,9 @@ class UamUserGroup
     {
         $aIsRecursiveMember = array();
         
-        global $wpdb;
-        
-        $oCurUserData = get_userdata($iObjectId);
-        
-        if (isset($oCurUserData->{$wpdb->prefix . "capabilities"})) {
-            $aCapabilities = $oCurUserData->{$wpdb->prefix . "capabilities"};
-        } else {
-            $aCapabilities = array();
-        }
-        
-        $aRoles = (is_array($aCapabilities) && count($aCapabilities) > 0) ? array_keys($aCapabilities) : array('norole');
+        $oUserData = get_userdata($iObjectId);
+
+        $aRoles = ( !empty($oUserData->roles) ) ? $oUserData->roles : array('norole');
         $aObjects = $this->getObjectsFromType('role');
 
         foreach ($aRoles as $sRole) {

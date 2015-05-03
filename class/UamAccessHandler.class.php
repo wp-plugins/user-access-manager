@@ -704,28 +704,13 @@ class UamAccessHandler
      */
     protected function _getUserRole($iUserId)
     {
-        /**
-         * @var wpdb $wpdb
-         */
-        global $wpdb;
-        
         if ( $iUserId == get_current_user_id() ) {
             $oUserData = wp_get_current_user();
         } else {
             $oUserData = get_userdata($iUserId);
         }
         
-        if (!empty($oUserData->user_level) && !isset($oUserData->user_level)) {
-            $oUserData->user_level = null;
-        }
-        
-        if (isset($oUserData->{$wpdb->prefix . "capabilities"})) {
-            $aCapabilities = $oUserData->{$wpdb->prefix . "capabilities"};
-        } else {
-            $aCapabilities = array();
-        }
-        
-        $aRoles = (is_array($aCapabilities) && count($aCapabilities) > 0) ? array_keys($aCapabilities) : array('norole');
+        $aRoles = ( !empty($oUserData->roles) ) ? $oUserData->roles : array('norole');
         return $aRoles;
     }
     
