@@ -1566,7 +1566,7 @@ class UserAccessManager
      * 
      * @return array
      */
-    public function showPost($aPosts = array())
+    public function showPost($aPosts, $oWpQuery)
     {
         $aShowPosts = array();
         $aUamOptions = $this->getAdminOptions();
@@ -1826,22 +1826,21 @@ class UserAccessManager
      * The function for the get_terms filter.
      * 
      * @param array $aTerms The terms.
+     * @param array $aTaxonomies The taxonomies queried.
      * @param array $aArgs  The given arguments.
      * 
      * @return array
      */
-    public function showTerms($aTerms = array(), $aArgs = array())
+    public function showTerms($aTerms, $aTaxonomies, $aArgs)
     {
+        if ( !in_array(reset($aTaxonomies), array('category', 'post_tag')) || empty($aTerms) || 'all' != $aArgs['fields'] ) {
+            return $aTerms;
+        }
+        
         $aShowTerms = array();
 
         foreach ($aTerms as $oTerm) {
-            if (!is_object($oTerm)) {
-                return $aTerms;
-            }
-
-            if ($oTerm->taxonomy == 'category'  || $oTerm->taxonomy == 'post_tag') {
-                $oTerm = $this->_getTerm($oTerm->taxonomy, $oTerm);
-            }
+            $oTerm = $this->_getTerm($oTerm->taxonomy, $oTerm);
 
             if ($oTerm !== null && (!isset($oTerm->isEmpty) || !$oTerm->isEmpty)) {
                 $aShowTerms[$oTerm->term_id] = $oTerm;

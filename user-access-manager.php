@@ -326,13 +326,13 @@ if (isset($oUserAccessManager)) {
     if (function_exists('add_filter')) {
         add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
         add_filter('wp_get_attachment_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
-        add_filter('the_posts', array($oUserAccessManager, 'showPost'));
+        add_filter('the_posts', array($oUserAccessManager, 'showPost'), 10, 2);
         add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
         add_filter('wp_get_nav_menu_items', array($oUserAccessManager, 'showCustomMenu'));
         add_filter('comments_array', array($oUserAccessManager, 'showComment'));
         add_filter('the_comments', array($oUserAccessManager, 'showComment'));
         add_filter('get_pages', array($oUserAccessManager, 'showPage'));
-        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 2);
+        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 3);
         add_filter('get_next_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('get_previous_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
