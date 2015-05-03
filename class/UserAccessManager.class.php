@@ -1328,21 +1328,21 @@ class UserAccessManager
     }
     
     /**
-     * The function for the manage_categories_custom_column action.
+     * The function for the manage_category_custom_column filter.
      * 
-     * @param string  $sEmpty      An empty string from wordpress? What the hell?!?
+     * @param string  $sOut        Output for the column.
      * @param string  $sColumnName The column name.
      * @param integer $iId         The _iId.
      * 
      * @return string|null
      */
-    public function addCategoryColumn($sEmpty, $sColumnName, $iId)
+    public function addCategoryColumn($sOut, $sColumnName, $iId)
     {
         if ($sColumnName == 'uam_access') {
-            return $this->getIncludeContents(UAM_REALPATH.'tpl/objectColumn.php', $iId, 'category');
+            return $sOut . $this->getIncludeContents(UAM_REALPATH.'tpl/objectColumn.php', $iId, 'category');
         }
 
-        return null;
+        return $sOut;
     }
     
     /**
