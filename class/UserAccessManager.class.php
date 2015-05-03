@@ -910,41 +910,49 @@ class UserAccessManager
      */
     
     /**
-     * The function for the wp_print_styles action.
+     * The function for the [wp|admin]_enqueue_scripts action.
      * 
      * @return null
      */
-    public function addStyles()
+    public function addStyles($hook = '')
     {
-        wp_enqueue_style(
-            'UserAccessManagerAdmin', 
-            UAM_URLPATH . "css/uamAdmin.css",
-            array() ,
-            '1.0',
-            'screen'
-        );
-        
-        wp_enqueue_style(
-            'UserAccessManagerLoginForm', 
-            UAM_URLPATH . "css/uamLoginForm.css",
-            array() ,
-            '1.0',
-            'screen'
-        );
+        // admin styles
+        if (!empty($hook)) {
+            wp_enqueue_style(
+                'UserAccessManagerAdmin', 
+                UAM_URLPATH . "css/uamAdmin.css",
+                array() ,
+                '1.0',
+                'screen'
+            );
+
+        // front-end styles
+        } else {
+            // just register and enqueue later only if needed
+            wp_register_style(
+                'UserAccessManagerLoginForm', 
+                UAM_URLPATH . "css/uamLoginForm.css",
+                array() ,
+                '1.0',
+                'screen'
+            );
+        }
     }
     
     /**
-     * The function for the wp_print_scripts action.
+     * The function for the admin_enqueue_scripts action.
      * 
      * @return null
      */
-    public function addScripts()
+    public function addScripts($hook)
     {
-        wp_enqueue_script(
-            'UserAccessManagerFunctions', 
-            UAM_URLPATH . 'js/functions.js', 
-            array('jquery')
-        );
+        if ($hook == 'uam_page_uam_settings') {
+            wp_enqueue_script(
+                'UserAccessManagerFunctions', 
+                UAM_URLPATH . 'js/functions.js', 
+                array('jquery')
+            );
+        }
     }
     
     /**
@@ -1951,6 +1959,7 @@ class UserAccessManager
     public function getLoginBarHtml()
     {
         if (!is_user_logged_in()) {
+            wp_enqueue_style('UserAccessManagerLoginForm');
             return $this->getIncludeContents(UAM_REALPATH.'tpl/loginBar.php');
         }
         
