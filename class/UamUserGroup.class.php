@@ -731,7 +731,7 @@ class UamUserGroup
             }
         }
         
-        if ($sType == 'full' && $this->getAccessHandler()->isPostableType($sObjectType) && $sObjectType != 'role') {
+        if ($sType == 'full' && !$this->getAccessHandler()->isPostableType($sObjectType) && $sObjectType != 'role') {
             if ($sObjectType == 'category') {
                 $this->_aObjects[$sObjectType][$sType] = $this->getFullCategories($this->_aObjects[$sObjectType][$sType]);
             } elseif ($sObjectType == 'user') {
