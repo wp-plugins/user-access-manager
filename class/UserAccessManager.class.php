@@ -1779,7 +1779,9 @@ class UserAccessManager
                 
                 if (isset($aTermPosts)) {
                     foreach ($aTermPosts as $oPost) {
-                        if ($aUamOptions['hide_'.$oPost->post_type] == 'true'
+                        $sPostType = ( !in_array($oPost->post_type, array('post', 'page')) )? 'post' : $oPost->post_type;
+                        if ($oUamAccessHandler->isPostableType($oPost->post_type)
+                            && $aUamOptions['hide_'.$sPostType] == 'true'
                             && !$oUamAccessHandler->checkObjectAccess($oPost->post_type, $oPost->ID)
                         ) {
                             $oTerm->count--;
