@@ -882,26 +882,21 @@ class UamUserGroup
      */
     protected function _getFullCategory($iObjectId)
     {
-        $oCategory = $this->getAccessHandler()->getUserAccessManager()->getCategory($iObjectId);
-
         $aIsRecursiveMember = array();
         
         $oUserAccessManager = $this->getAccessHandler()->getUserAccessManager();
         $aUamOptions = $oUserAccessManager->getAdminOptions();
 
         if ($aUamOptions['lock_recursive'] == 'true') {
+            $oCategory = $oUserAccessManager->getCategory($iObjectId);
             if (isset($oCategory->parent)
                 && !is_null($oCategory->parent)
             ) {
-                $oParentCategory = $this->_getSingleObject(
-                    'category',
-                    $oCategory->parent,
-                    'full'
-                );
+                $oParentCategory = $this->_getSingleObject('category', $oCategory->parent, 'full');
 
                 if ($oParentCategory !== null) {
-                    $oCurCategory = $this->getAccessHandler()->getUserAccessManager()->getCategory($iObjectId);
-                    $oParentCategory->name = $oCurCategory->name;
+                    $oParentCategoryObject = $oUserAccessManager->getCategory($oParentCategory->id);
+                    $oParentCategory->name = $oParentCategoryObject->name;
                     $aIsRecursiveMember['category'][] = $oParentCategory;
                 }
             }
