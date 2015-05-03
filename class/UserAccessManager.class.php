@@ -1750,7 +1750,7 @@ class UserAccessManager
         
         $oTerm->isEmpty = false;
         
-        $oTerm->name .= $this->adminOutput('term', $oTerm->term_id);
+        $oTerm->name .= $this->adminOutput('category', $oTerm->term_id);
         
         if ($sTermType == 'post_tag'
             || ( $sTermType == 'category' || $sTermType == $oTerm->taxonomy)
@@ -1806,7 +1806,7 @@ class UserAccessManager
                     while ($oCurCategory->parent != 0) {
                         $oCurCategory = get_term($oCurCategory->parent, 'category');
                         
-                        if ($oUamAccessHandler->checkObjectAccess('term', $oCurCategory->term_id)) {
+                        if ($oUamAccessHandler->checkObjectAccess('category', $oCurCategory->term_id)) {
                             $oTerm->parent = $oCurCategory->term_id;
                             break;
                         }
