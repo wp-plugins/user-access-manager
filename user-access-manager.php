@@ -121,8 +121,6 @@ if (!function_exists("userAccessManagerAP")) {
             );
         }
 
-        get_currentuserinfo();
-        $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
         $aTaxonomies = get_taxonomies(array('public' => true, '_builtin' => false));
 
@@ -215,7 +213,7 @@ if (!function_exists("userAccessManagerAPMenu")) {
     function userAccessManagerAPMenu()
     {
         global $oUserAccessManager;
-        $oCurrentUser = $oUserAccessManager->getCurrentUser();
+        //$oCurrentUser = $oUserAccessManager->getCurrentUser();
         
         if (!isset($oUserAccessManager)) {
             return;
@@ -237,7 +235,6 @@ if (!function_exists("userAccessManagerAPMenu")) {
             );
         }
         
-        $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
         
         if ($oUamAccessHandler->checkUserAccess()) {

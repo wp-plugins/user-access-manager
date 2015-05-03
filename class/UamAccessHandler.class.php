@@ -709,7 +709,11 @@ class UamAccessHandler
          */
         global $wpdb;
         
-        $oUserData = get_userdata($iUserId);
+        if ( $iUserId == get_current_user_id() ) {
+            $oUserData = wp_get_current_user();
+        } else {
+            $oUserData = get_userdata($iUserId);
+        }
         
         if (!empty($oUserData->user_level) && !isset($oUserData->user_level)) {
             $oUserData->user_level = null;
