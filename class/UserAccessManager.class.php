@@ -1833,7 +1833,13 @@ class UserAccessManager
      */
     public function showTerms($aTerms, $aTaxonomies, $aArgs)
     {
-        if ( !in_array(reset($aTaxonomies), array('category', 'post_tag')) || empty($aTerms) || 'all' != $aArgs['fields'] ) {
+        $oUamAccessHandler = $this->getAccessHandler();
+        
+        if (!in_array(reset($aTaxonomies), array('category', 'post_tag'))
+            || empty($aTerms)
+            || 'all' != $aArgs['fields']
+            || ($this->atAdminPanel() && $oUamAccessHandler->checkUserAccess())
+        ) {
             return $aTerms;
         }
         
