@@ -121,8 +121,6 @@ if (!function_exists("userAccessManagerAP")) {
             );
         }
 
-        get_currentuserinfo();
-        $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
         $aTaxonomies = get_taxonomies(array('public' => true, '_builtin' => false));
 
@@ -131,8 +129,8 @@ if (!function_exists("userAccessManagerAP")) {
         ) {
             //Admin actions
             if (function_exists('add_action')) {
-                add_action('admin_print_styles', array($oUserAccessManager, 'addStyles'));
-                add_action('wp_print_scripts', array($oUserAccessManager, 'addScripts'));
+                add_action('admin_enqueue_scripts', array($oUserAccessManager, 'addStyles'));
+                add_action('admin_enqueue_scripts', array($oUserAccessManager, 'addScripts'));
 
                 add_action('manage_posts_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
                 add_action('manage_pages_custom_column', array($oUserAccessManager, 'addPostColumn'), 10, 2);
@@ -147,7 +145,8 @@ if (!function_exists("userAccessManagerAP")) {
                 add_action('edit_user_profile', array($oUserAccessManager, 'showUserProfile'));
                 add_action('profile_update', array($oUserAccessManager, 'saveUserData'));
 
-                add_action('edit_category_form', array($oUserAccessManager, 'showCategoryEditForm'));
+                add_action('category_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
+                add_action('category_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                 add_action('create_category', array($oUserAccessManager, 'saveCategoryData'));
                 add_action('edit_category', array($oUserAccessManager, 'saveCategoryData'));
 
@@ -157,7 +156,7 @@ if (!function_exists("userAccessManagerAP")) {
                 //Taxonomies
                 foreach ($aTaxonomies as $sTaxonomy) {
                     add_filter('manage_edit-'.$sTaxonomy.'_columns', array($oUserAccessManager, 'addCategoryColumnsHeader'));
-                    add_action('manage_'.$sTaxonomy.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
+                    add_filter('manage_'.$sTaxonomy.'_custom_column', array($oUserAccessManager, 'addCategoryColumn'), 10, 3);
                     add_action($sTaxonomy.'_add_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                     add_action($sTaxonomy.'_edit_form_fields', array($oUserAccessManager, 'showCategoryEditForm'));
                     add_action('create_'.$sTaxonomy, array($oUserAccessManager, 'saveCategoryData'));
@@ -215,7 +214,7 @@ if (!function_exists("userAccessManagerAPMenu")) {
     function userAccessManagerAPMenu()
     {
         global $oUserAccessManager;
-        $oCurrentUser = $oUserAccessManager->getCurrentUser();
+        //$oCurrentUser = $oUserAccessManager->getCurrentUser();
         
         if (!isset($oUserAccessManager)) {
             return;
@@ -237,7 +236,6 @@ if (!function_exists("userAccessManagerAPMenu")) {
             );
         }
         
-        $oCurUserData = get_userdata($oCurrentUser->ID);
         $oUamAccessHandler = $oUserAccessManager->getAccessHandler();
         
         if ($oUamAccessHandler->checkUserAccess()) {
@@ -275,7 +273,7 @@ if (!function_exists("userAccessManagerAPMenu")) {
                 $aPostableTypes = $oUamAccessHandler->getPostableTypes();
                 
                 foreach ($aPostableTypes as $sPostableType) {
-                    add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), $sPostableType, 'side');
+                    add_meta_box('uma_post_access', __('Access', 'user-access-manager'), array($oUserAccessManager, 'editPostContent'), $sPostableType, 'side');
                 }
                 
                 /*add_meta_box('uma_post_access', 'Access', array($oUserAccessManager, 'editPostContent'), 'post', 'side');
@@ -320,26 +318,28 @@ if (isset($oUserAccessManager)) {
 
     //Actions
     if (function_exists('add_action')) {
-        add_action('wp_print_scripts', array($oUserAccessManager, 'addScripts'));
-        add_action('wp_print_styles', array($oUserAccessManager, 'addStyles'));
+        add_action('wp_enqueue_scripts', array($oUserAccessManager, 'addStyles'));
         add_action('admin_init', 'userAccessManagerAP');
         add_action('admin_menu', 'userAccessManagerAPMenu');
     }
     
     //Filters
     if (function_exists('add_filter')) {
-        add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
-        add_filter('wp_get_attachment_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
-        add_filter('the_posts', array($oUserAccessManager, 'showPost'));
-        add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
+        if ($aUamOptions['lock_file'] == 'true') {
+            add_filter('wp_get_attachment_thumb_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
+            add_filter('wp_get_attachment_url', array($oUserAccessManager, 'getFileUrl'), 10, 2);
+            add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
+        }
+        add_filter('the_posts', array($oUserAccessManager, 'showPost'), 10, 2);
+        // NOTE: This filter is not needed since the where clause is already added in 'parse_query' hook.
+        //add_filter('posts_where_paged', array($oUserAccessManager, 'showPostSql'));
         add_filter('wp_get_nav_menu_items', array($oUserAccessManager, 'showCustomMenu'));
         add_filter('comments_array', array($oUserAccessManager, 'showComment'));
         add_filter('the_comments', array($oUserAccessManager, 'showComment'));
         add_filter('get_pages', array($oUserAccessManager, 'showPage'));
-        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 2);
+        add_filter('get_terms', array($oUserAccessManager, 'showTerms'), 10, 3);
         add_filter('get_next_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
         add_filter('get_previous_post_where', array($oUserAccessManager, 'showNextPreviousPost'));
-        add_filter('post_link', array($oUserAccessManager, 'cachePostLinks'), 10, 2);
         add_filter('edit_post_link', array($oUserAccessManager, 'showGroupMembership'), 10, 2);
         add_filter('parse_query', array($oUserAccessManager, 'parseQuery'));
         add_filter('getarchives_where', array($oUserAccessManager, 'showPostSql'));

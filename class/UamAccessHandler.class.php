@@ -83,7 +83,7 @@ class UamAccessHandler
             $this->_aPostableTypes[] = $oArgs->name;
             $this->_aPostableTypes = array_unique($this->_aPostableTypes);
             $this->_aPostableTypesMap = array_flip($this->_aPostableTypes);
-            $this->_aObjectTypes = array_merge($this->_aPostableTypes, $this->_aObjectTypes);
+            $this->_aObjectTypes = array_unique( array_merge($this->_aObjectTypes, $this->_aPostableTypes) );
             $this->_aAllObjectTypes = null;
             $this->_aAllObjectTypesMap = null;
             $this->_aValidObjectTypes = null;
@@ -704,24 +704,13 @@ class UamAccessHandler
      */
     protected function _getUserRole($iUserId)
     {
-        /**
-         * @var wpdb $wpdb
-         */
-        global $wpdb;
-        
-        $oUserData = get_userdata($iUserId);
-        
-        if (!empty($oUserData->user_level) && !isset($oUserData->user_level)) {
-            $oUserData->user_level = null;
-        }
-        
-        if (isset($oUserData->{$wpdb->prefix . "capabilities"})) {
-            $aCapabilities = $oUserData->{$wpdb->prefix . "capabilities"};
+        if ( $iUserId == get_current_user_id() ) {
+            $oUserData = wp_get_current_user();
         } else {
-            $aCapabilities = array();
+            $oUserData = get_userdata($iUserId);
         }
         
-        $aRoles = (is_array($aCapabilities) && count($aCapabilities) > 0) ? array_keys($aCapabilities) : array('norole');
+        $aRoles = ( !empty($oUserData->roles) ) ? $oUserData->roles : array('norole');
         return $aRoles;
     }
     
@@ -735,7 +724,7 @@ class UamAccessHandler
     public function userIsAdmin($iUserId)
     {
         $aRoles = $this->_getUserRole($iUserId);
-        $aRolesMap = array_keys($aRoles);
+        $aRolesMap = array_flip($aRoles);
         
         if (isset($aRolesMap['administrator']) || is_super_admin($iUserId)) {
             return true;
@@ -757,7 +746,7 @@ class UamAccessHandler
         $aUamOptions = $this->getUserAccessManager()->getAdminOptions();
         
         $aRoles = $this->_getUserRole($oCurrentUser->ID);
-        $aRolesMap = array_keys($aRoles);
+        $aRolesMap = array_flip($aRoles);
         $aOrderedRoles = $this->getRolesOrdered();
         $iRightsLevel = 0;
 
